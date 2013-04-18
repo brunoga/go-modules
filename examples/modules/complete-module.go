@@ -33,8 +33,8 @@ type CompleteModule struct {
 
 func (cm *CompleteModule) Parameters() *base_modules.ParameterMap {
 	return &base_modules.ParameterMap{
-		"text1" : "",
-		"text2" : "Default text",
+		"text1": "",
+		"text2": "Default text",
 	}
 }
 
@@ -77,4 +77,3 @@ func init() {
 		"",
 	})
 }
-

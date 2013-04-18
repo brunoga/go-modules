@@ -17,23 +17,23 @@ package modules
 // GenericModule defines a generic module implementation. This is mainly to be
 // used for struct embedding as it is not very useful by itself.
 type GenericModule struct {
-	name string
-	version string
-	id string
+	name       string
+	version    string
+	id         string
 	moduleType string
 	parameters *ParameterMap
-	ready bool
+	ready      bool
 }
 
 // NewGenericModule creates and returns a new GenericModule.
 func NewGenericModule(name, version, id, moduleType string) *GenericModule {
 	return &GenericModule{
-		name: name,
-		version: version,
-		id: id,
+		name:       name,
+		version:    version,
+		id:         id,
 		moduleType: moduleType,
 		parameters: &ParameterMap{},
-		ready: false,
+		ready:      false,
 	}
 }
 

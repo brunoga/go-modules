@@ -27,18 +27,16 @@ func main() {
 	fmt.Println("Total number of modules  :",
 		len(base_modules.GetAllModules()))
 
-	simpleModule := base_modules.GetModuleById("simple-module").
-		(*example_modules.SimpleModule)
-	if (simpleModule != nil) {
+	simpleModule := base_modules.GetModuleById("simple-module").(*example_modules.SimpleModule)
+	if simpleModule != nil {
 		fmt.Println(simpleModule.Id(), simpleModule.Name(),
 			simpleModule.Version())
 	}
 
-	completeModule := base_modules.GetModuleById("complete-module").
-		(*example_modules.CompleteModule)
+	completeModule := base_modules.GetModuleById("complete-module").(*example_modules.CompleteModule)
 	if completeModule != nil {
 		fmt.Println(completeModule.Id(), completeModule.Name(),
-                        completeModule.Version())
+			completeModule.Version())
 		err := completeModule.DoWork()
 		if err != nil {
 			fmt.Printf("error doing work : %v\n", err)
@@ -54,4 +52,3 @@ func main() {
 		}
 	}
 }
-

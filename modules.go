@@ -141,11 +141,10 @@ func GetModulesByType(moduleType string) ModuleMap {
 
 // GetModuleById returns the module represented by the given moduleId.
 func GetModuleById(moduleId string) Module {
-	return  registeredModulesById[moduleId]
+	return registeredModulesById[moduleId]
 }
 
 // GetAllModules returns a ModuleMap containing all registered modules.
 func GetAllModules() ModuleMap {
 	return registeredModulesById
 }
-
