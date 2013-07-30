@@ -15,7 +15,7 @@
 package modules
 
 import (
-	base_modules "bga/modules"
+	base_modules "github.com/brunoga/go-modules"
 )
 
 type SimpleModule2 struct {
@@ -25,6 +25,6 @@ type SimpleModule2 struct {
 func init() {
 	base_modules.RegisterModule(&SimpleModule2{
 		base_modules.NewGenericModule("Simple Module 2", "1.0.0",
-			"simple-module-2", "dummy-module"),
+			"simple-module-2", "", "dummy-module"),
 	})
 }

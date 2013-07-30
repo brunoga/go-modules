@@ -17,26 +17,27 @@ package main
 import (
 	"fmt"
 
-	base_modules "bga/modules"
-	example_modules "bga/modules/examples/modules"
+	base_modules "github.com/brunoga/go-modules"
+	example_modules "github.com/brunoga/go-modules/examples/modules"
 )
 
 func main() {
 	fmt.Println("Number of sample modules :",
-		len(base_modules.GetModulesByType("sample-module")))
+		base_modules.GetModuleCountByType("sample-module"))
 	fmt.Println("Total number of modules  :",
-		len(base_modules.GetAllModules()))
+		base_modules.GetAllModulesCount())
 
-	simpleModule := base_modules.GetModuleById("simple-module").(*example_modules.SimpleModule)
+	simpleModule := base_modules.GetModuleById("simple-module", "").(*example_modules.SimpleModule)
 	if simpleModule != nil {
-		fmt.Println(simpleModule.Id(), simpleModule.Name(),
+		fmt.Println(simpleModule.GenericId(), simpleModule.Name(),
 			simpleModule.Version())
 	}
 
-	completeModule := base_modules.GetModuleById("complete-module").(*example_modules.CompleteModule)
+	completeModule := base_modules.GetModuleById("complete-module", "").(*example_modules.CompleteModule)
 	if completeModule != nil {
-		fmt.Println(completeModule.Id(), completeModule.Name(),
+		fmt.Println(completeModule.GenericId(), completeModule.Name(),
 			completeModule.Version())
+		// This will fail as module is not configured.
 		err := completeModule.DoWork()
 		if err != nil {
 			fmt.Printf("error doing work : %v\n", err)
@@ -46,9 +47,33 @@ func main() {
 		(*parameters)["text1"] = "This is text1"
 		completeModule.Configure(parameters)
 
+		// And now itwill work as expected.
 		err = completeModule.DoWork()
 		if err != nil {
 			fmt.Printf("error doing work : %v\n", err)
 		}
 	}
+
+	// Add a new complete module with a different specific id.
+	base_modules.RegisterModule(base_modules.NewGenericModule(
+		"Complete Module / Specific", "1.0.0",
+		"complete-module", "specific", "sample-module"))
+
+	fmt.Println("After adding new module.")
+	fmt.Println("Number of sample modules :",
+		base_modules.GetModuleCountByType("sample-module"))
+	fmt.Println("Total number of modules  :",
+		base_modules.GetAllModulesCount())
+
+	completeModuleSpecific := base_modules.GetModuleById("complete-module", "specific")
+	if completeModuleSpecific == nil {
+		fmt.Println("Could not get reference to specific module.")
+	}
+	completeModuleDefault := base_modules.GetDefaultModuleByGenericId("complete-module")
+	if completeModuleDefault == nil {
+		fmt.Println("Could not get reference to default module.")
+	}
+
+	fmt.Println(completeModuleSpecific.Name())
+	fmt.Println(completeModuleDefault.Name())
 }

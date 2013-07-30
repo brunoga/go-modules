@@ -37,13 +37,24 @@ type Module interface {
 	// Version returns the human-readable version for the module.
 	Version() string
 
-	// Id returns a short identifier for this module. This must be unique
-	// among all registered modules and is enforced during module
-	// registration.
-	Id() string
+	// GenericId returns a short generic identifier for this module. Usually it
+	// identifies the "class" of this Module (for example, "directory-reader" and,
+	// together with SpecificId() below, must uniquely identify an instance of
+	// this Module.
+	GenericId() string
 
-	// Type returns the specific module type. Programs will usually only
-	// have modules of one specific type, but not necessarily.
+	// SpecificId returns a short identifier for this module. It serves to identify
+	// a specific Module instance in a given "class" (see GenericId()). For
+	// example, assuming a GenericId() of "directory-reader", this could return
+	// something that represents a specific directory. For example, it could return
+	// "home" to indicate that it is a "directory-reader" that operates in the
+	// "home" directory.
+	SpecificId() string
+
+	// Type returns the specific module type. This is used do group modules in
+	// specific domains so one can query about all modules on them. A type could,
+	// for example, be a refrence to the program that uses those modules (in other
+	// words, it could be the program name).
 	Type() string
 
 	// Register does any initialization required during module
@@ -72,26 +83,30 @@ type Module interface {
 	Ready() bool
 }
 
-// ModuleMap is a container for a list of modules keyed by id.
+// ModuleMap is a container for Modules keyed by specific id.
 type ModuleMap map[string]Module
 
-// registeredModulesByType is a per type container for all registered modules.
-var registeredModulesByType map[string]ModuleMap
+// FullModuleMap is a container for ModuleMaps keyed by generic id.
+type FullModuleMap map[string]ModuleMap
 
-// registeredModulesById is a per id container for all reistered modules.
-var registeredModulesById ModuleMap
+// registeredModulesByType is a per type container for all registered modules.
+var registeredModulesByType map[string]FullModuleMap
+
+// registeredModulesById is a per id container for all registered modules.
+var registeredModulesById FullModuleMap
 
 func init() {
-	registeredModulesByType = make(map[string]ModuleMap)
-	registeredModulesById = make(ModuleMap)
+	registeredModulesByType = make(map[string]FullModuleMap)
+	registeredModulesById = make(FullModuleMap)
 }
 
 // RegisterModule registers a new module for usage.
 func RegisterModule(module Module) error {
-	moduleId := module.Id()
-	_, ok := registeredModulesById[moduleId]
+	genericModuleId := module.GenericId()
+	specificModuleId := module.SpecificId()
+	_, ok := registeredModulesById[genericModuleId][specificModuleId]
 	if ok {
-		return fmt.Errorf("id colision detected : %q", moduleId)
+		return fmt.Errorf("id colision detected : %q / %q", genericModuleId, specificModuleId)
 	}
 
 	err := module.Register()
@@ -102,11 +117,17 @@ func RegisterModule(module Module) error {
 	moduleType := module.Type()
 
 	if registeredModulesByType[moduleType] == nil {
-		registeredModulesByType[moduleType] = make(ModuleMap)
+		registeredModulesByType[moduleType] = make(FullModuleMap)
+	}
+	if registeredModulesByType[moduleType][genericModuleId] == nil {
+		registeredModulesByType[moduleType][genericModuleId] = make(ModuleMap)
+	}
+	if registeredModulesById[genericModuleId] == nil {
+		registeredModulesById[genericModuleId] = make(ModuleMap)
 	}
 
-	registeredModulesByType[moduleType][moduleId] = module
-	registeredModulesById[moduleId] = module
+	registeredModulesByType[moduleType][genericModuleId][specificModuleId] = module
+	registeredModulesById[genericModuleId][specificModuleId] = module
 
 	return nil
 }
@@ -114,37 +135,89 @@ func RegisterModule(module Module) error {
 // UnregisterModule unregisters the given module.
 func UnregisterModule(module Module) error {
 	moduleType := module.Type()
-	typeModuleList := registeredModulesByType[moduleType]
-	if len(typeModuleList) != 0 {
-		for id, m := range typeModuleList {
-			if m == module {
-				delete(typeModuleList, id)
-				if len(registeredModulesByType[moduleType]) == 0 {
-					delete(registeredModulesByType, moduleType)
-				}
+	genericModuleId := module.GenericId()
+	specificModuleId := module.SpecificId()
 
-				moduleId := module.Id()
-				delete(registeredModulesById, moduleId)
-
-				return nil
+	typeModuleMap := registeredModulesByType[moduleType][genericModuleId]
+	for id, m := range typeModuleMap {
+		if m == module {
+			// Remove module from modules by type map.
+			delete(typeModuleMap, id)
+			if len(registeredModulesByType[moduleType][genericModuleId]) == 0 {
+				// No more modules in generic id map. Delete it too.
+				delete(registeredModulesByType[moduleType], genericModuleId)
 			}
+			if len(registeredModulesByType[moduleType]) == 0 {
+				// No more modules in this type. Delete it too.
+				delete(registeredModulesByType, moduleType)
+			}
+
+			// Remove module from modules by id map.
+			delete(registeredModulesById[genericModuleId], specificModuleId)
+			if len(registeredModulesById[genericModuleId]) == 0 {
+				// No more modules in generic id map. Delete it too.
+				delete(registeredModulesById, genericModuleId)
+			}
+
+			return nil
 		}
 	}
 
 	return fmt.Errorf("module not found")
 }
 
-// GetModulesByType returns a ModuleMap with all modules of the iven type.
-func GetModulesByType(moduleType string) ModuleMap {
+// GetModulesByType returns a FullModuleMap with all modules of the given type.
+func GetModulesByType(moduleType string) FullModuleMap {
 	return registeredModulesByType[moduleType]
 }
 
-// GetModuleById returns the module represented by the given moduleId.
-func GetModuleById(moduleId string) Module {
-	return registeredModulesById[moduleId]
+// GetModuleCountByType returns the number of registered modules of a specific
+// type.
+func GetModuleCountByType(moduleType string) int {
+	return countFullModuleMap(GetModulesByType(moduleType))
+}
+
+// GetModulesByGenericId returns a ModuleMap with all modules with the given
+// genericModuleId.
+func GetModulesByGenericId(genericModuleId string) ModuleMap {
+	return registeredModulesById[genericModuleId]
+}
+
+// GetModuleCountByGenericId returns the number of registered modules with the
+// given generic id.
+func GetModuleCountByGenericId(genericModuleId string) int {
+	return len(GetModulesByGenericId(genericModuleId))
+}
+
+// GetModuleById returns the Module instance associated with the given
+// genericModuleId and SpecificModuleId.
+func GetModuleById(genericModuleId, specificModuleId string) Module {
+	return registeredModulesById[genericModuleId][specificModuleId]
+}
+
+// GetDefaultModuleByGenericId returns the default module represented by the given
+// genericModuleId. There may not be a default instance available.
+func GetDefaultModuleByGenericId(genericModuleId string) Module {
+	// Default module jas the empty string as the specificModuleId.
+	return registeredModulesById[genericModuleId][""]
 }
 
 // GetAllModules returns a ModuleMap containing all registered modules.
-func GetAllModules() ModuleMap {
+func GetAllModules() FullModuleMap {
 	return registeredModulesById
+}
+
+// GetAllModulesCount returns the total number of registered modules.
+func GetAllModulesCount() int {
+	return countFullModuleMap(GetAllModules())
+}
+
+// countFullModuleMap returns the number of modules in the given FullModuleMap.
+func countFullModuleMap(fullModuleMap FullModuleMap) int {
+	count := 0
+	for _, s := range fullModuleMap {
+		count = count + len(s)
+	}
+
+	return count
 }

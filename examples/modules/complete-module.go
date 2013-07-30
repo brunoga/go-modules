@@ -17,7 +17,7 @@ package modules
 import (
 	"fmt"
 
-	base_modules "bga/modules"
+	base_modules "github.com/brunoga/go-modules"
 )
 
 type CompleteModuleInterface interface {
@@ -72,7 +72,7 @@ func registerCompleteModule(module CompleteModuleInterface) error {
 func init() {
 	registerCompleteModule(&CompleteModule{
 		base_modules.NewGenericModule("Complete Module", "1.0.0",
-			"complete-module", "sample-module"),
+			"complete-module", "", "sample-module"),
 		"",
 		"",
 	})

@@ -19,18 +19,20 @@ package modules
 type GenericModule struct {
 	name       string
 	version    string
-	id         string
+	genericId  string
+	specificId string
 	moduleType string
 	parameters *ParameterMap
 	ready      bool
 }
 
 // NewGenericModule creates and returns a new GenericModule.
-func NewGenericModule(name, version, id, moduleType string) *GenericModule {
+func NewGenericModule(name, version, genericId, specificId, moduleType string) *GenericModule {
 	return &GenericModule{
 		name:       name,
 		version:    version,
-		id:         id,
+		genericId:  genericId,
+		specificId: specificId,
 		moduleType: moduleType,
 		parameters: &ParameterMap{},
 		ready:      false,
@@ -45,8 +47,12 @@ func (gm *GenericModule) Version() string {
 	return gm.version
 }
 
-func (gm *GenericModule) Id() string {
-	return gm.id
+func (gm *GenericModule) GenericId() string {
+	return gm.genericId
+}
+
+func (gm *GenericModule) SpecificId() string {
+	return gm.specificId
 }
 
 func (gm *GenericModule) Type() string {
