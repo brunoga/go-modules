@@ -37,24 +37,25 @@ type Module interface {
 	// Version returns the human-readable version for the module.
 	Version() string
 
-	// GenericId returns a short generic identifier for this module. Usually it
-	// identifies the "class" of this Module (for example, "directory-reader" and,
-	// together with SpecificId() below, must uniquely identify an instance of
-	// this Module.
+	// GenericId returns a short generic identifier for this module. Usually
+	// it identifies the "class" of this Module (for example, 
+	// "directory-reader" and, together with SpecificId() below, must
+	// uniquely identify an instance of this Module.
 	GenericId() string
 
-	// SpecificId returns a short identifier for this module. It serves to identify
-	// a specific Module instance in a given "class" (see GenericId()). For
-	// example, assuming a GenericId() of "directory-reader", this could return
-	// something that represents a specific directory. For example, it could return
-	// "home" to indicate that it is a "directory-reader" that operates in the
-	// "home" directory.
+	// SpecificId returns a short identifier for this module. It serves to
+	// identify a specific Module instance in a given "class" (see
+	// GenericId()). For example, assuming a GenericId() of
+	// "directory-reader", this could return something that represents a
+	// specific directory. For example, it could return "home" to indicate
+	// that it is a "directory-reader" that operates in the "home"
+	// directory.
 	SpecificId() string
 
-	// Type returns the specific module type. This is used do group modules in
-	// specific domains so one can query about all modules on them. A type could,
-	// for example, be a refrence to the program that uses those modules (in other
-	// words, it could be the program name).
+	// Type returns the specific module type. This is used do group modules
+	// in specific domains so one can query about all modules on them. A
+	// type could, for example, be a refrence to the program that uses
+	// those modules (in other words, it could be the program name).
 	Type() string
 
 	// Register does any initialization required during module
@@ -77,8 +78,11 @@ type Module interface {
 	// configuration options.
 	Configure(params *ParameterMap) error
 
-	// Duplicate creates a new instance of this module with the given
-	// specific id. Returns a non-nil error on failure.
+	// Duplicate creates and registers a new instance of this module with
+	// the given specific id. Returns a non-nil error on failure. Note that
+	// this must be implemented on each Module that cares about being
+	// duplicated and it is the responsibility of each implementation to
+	// register (calling RegisterModule()) the duplicate Module.
 	Duplicate(specificId string) error
 
 	// iReady returns true if the module is ready to be used. False
@@ -148,7 +152,8 @@ func UnregisterModule(module Module) error {
 			// Remove module from modules by type map.
 			delete(typeModuleMap, id)
 			if len(registeredModulesByType[moduleType][genericModuleId]) == 0 {
-				// No more modules in generic id map. Delete it too.
+				// No more modules in generic id map. Delete it
+				// too.
 				delete(registeredModulesByType[moduleType], genericModuleId)
 			}
 			if len(registeredModulesByType[moduleType]) == 0 {
@@ -159,7 +164,8 @@ func UnregisterModule(module Module) error {
 			// Remove module from modules by id map.
 			delete(registeredModulesById[genericModuleId], specificModuleId)
 			if len(registeredModulesById[genericModuleId]) == 0 {
-				// No more modules in generic id map. Delete it too.
+				// No more modules in generic id map. Delete it
+				// too.
 				delete(registeredModulesById, genericModuleId)
 			}
 
@@ -199,8 +205,8 @@ func GetModuleById(genericModuleId, specificModuleId string) Module {
 	return registeredModulesById[genericModuleId][specificModuleId]
 }
 
-// GetDefaultModuleByGenericId returns the default module represented by the given
-// genericModuleId. There may not be a default instance available.
+// GetDefaultModuleByGenericId returns the default module represented by the
+// given genericModuleId. There may not be a default instance available.
 func GetDefaultModuleByGenericId(genericModuleId string) Module {
 	// Default module jas the empty string as the specificModuleId.
 	return registeredModulesById[genericModuleId][""]
