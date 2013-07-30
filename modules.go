@@ -77,6 +77,11 @@ type Module interface {
 	// configuration options.
 	Configure(params *ParameterMap) error
 
+	// Duplicates returns a new instance of this module with the given
+	// specific id. Returns nil if there is a module already registered with
+	// this specific id and the current generic id.
+	Duplicate(specificId string) Module
+
 	// iReady returns true if the module is ready to be used. False
 	// otherwise. If the module requires configuration, this will return
 	// false until Configure is called succesfully.

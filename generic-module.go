@@ -76,6 +76,15 @@ func (gm *GenericModule) Configure(parameters *ParameterMap) error {
 	return nil
 }
 
+func (gm *GenericModule) Duplicate(specificId string) Module {
+	module := GetModuleById(gm.GenericId(), specificId)
+	if module != nil {
+		return nil
+	}
+
+	return NewGenericModule(gm.name, gm.version, gm.genericId, specificId, gm.moduleType)
+}
+
 func (gm *GenericModule) Ready() bool {
 	return gm.ready
 }
