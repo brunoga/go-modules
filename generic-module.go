@@ -14,6 +14,10 @@
 
 package modules
 
+import (
+	"fmt"
+)
+
 // GenericModule defines a generic module implementation. This is mainly to be
 // used for struct embedding as it is not very useful by itself.
 type GenericModule struct {
@@ -76,13 +80,8 @@ func (gm *GenericModule) Configure(parameters *ParameterMap) error {
 	return nil
 }
 
-func (gm *GenericModule) Duplicate(specificId string) Module {
-	module := GetModuleById(gm.GenericId(), specificId)
-	if module != nil {
-		return nil
-	}
-
-	return NewGenericModule(gm.name, gm.version, gm.genericId, specificId, gm.moduleType)
+func (gm *GenericModule) Duplicate(specificId string) error {
+	return fmt.Errorf("generic module can not be duplicated")
 }
 
 func (gm *GenericModule) Ready() bool {
