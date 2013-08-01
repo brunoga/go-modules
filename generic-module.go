@@ -92,3 +92,14 @@ func (gm *GenericModule) Ready() bool {
 func (gm *GenericModule) SetReady(ready bool) {
 	gm.ready = ready
 }
+
+// Implements the Stringer interface.
+func (gm *GenericModule) String() string {
+	var moduleType string
+	if gm.specificId == "" {
+		moduleType = "default"
+	} else {
+		moduleType = gm.specificId
+	}
+	fmt.Printf("%s v%s %s/%s %s")
+}
