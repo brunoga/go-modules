@@ -80,8 +80,8 @@ func (gm *GenericModule) Configure(parameters *ParameterMap) error {
 	return nil
 }
 
-func (gm *GenericModule) Duplicate(specificId string) error {
-	return fmt.Errorf("generic module can not be duplicated")
+func (gm *GenericModule) Duplicate(specificId string) (Module, error) {
+	return nil, fmt.Errorf("generic module can not be duplicated")
 }
 
 func (gm *GenericModule) Ready() bool {
