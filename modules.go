@@ -86,7 +86,7 @@ type Module interface {
 	// register (calling RegisterModule()) the duplicate.
 	Duplicate(specificId string) (Module, error)
 
-	// iReady returns true if the module is ready to be used. False
+	// Ready returns true if the module is ready to be used. False
 	// otherwise. If the module requires configuration, this will return
 	// false until Configure is called succesfully.
 	Ready() bool
