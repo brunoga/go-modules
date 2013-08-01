@@ -102,5 +102,5 @@ func (gm *GenericModule) String() string {
 		moduleType = gm.moduleType
 	}
 
-	return fmt.Sprintf("%s v%s %s/%s %s", gm.name, gm.version, gm.genericId, gm.specificId, gm.moduleType)
+	return fmt.Sprintf("%s v%s %s/%s %s", gm.name, gm.version, gm.genericId, gm.specificId, moduleType)
 }
