@@ -99,7 +99,8 @@ func (gm *GenericModule) String() string {
 	if gm.specificId == "" {
 		moduleType = "default"
 	} else {
-		moduleType = gm.specificId
+		moduleType = gm.type
 	}
-	fmt.Printf("%s v%s %s/%s %s")
+
+	return fmt.Sprintf("%s v%s %s/%s %s", gm.name, gm.version, gm.genericId, gm.specificId, gm.moduleType)
 }
