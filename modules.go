@@ -38,7 +38,7 @@ type Module interface {
 	Version() string
 
 	// GenericId returns a short generic identifier for this module. Usually
-	// it identifies the "class" of this Module (for example, 
+	// it identifies the "class" of this Module (for example,
 	// "directory-reader" and, together with SpecificId() below, must
 	// uniquely identify an instance of this Module.
 	GenericId() string
@@ -80,8 +80,8 @@ type Module interface {
 
 	// Duplicate creates and registers a new instance of this module with
 	// the given specific id. Returns a reference to the new Module and a
-	// error on success and a non-nil error on filure. Note that
-	// this must be implemented on each Module that cares about being
+	// nil error on success and a non-nil error on failure. Note that
+	// this must be implemented by each Module that cares about being
 	// duplicated and it is the responsibility of each implementation to
 	// register (calling RegisterModule()) the duplicate.
 	Duplicate(specificId string) (Module, error)
