@@ -17,7 +17,7 @@ package modules
 import (
 	"fmt"
 
-	base_modules "github.com/brunoga/go-modules"
+	base_modules "gopkg.in/brunoga/go-modules.v1"
 )
 
 type CompleteModuleInterface interface {

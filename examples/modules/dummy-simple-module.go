@@ -15,7 +15,7 @@
 package modules
 
 import (
-	base_modules "github.com/brunoga/go-modules"
+	base_modules "gopkg.in/brunoga/go-modulesi.v1"
 )
 
 type SimpleModule2 struct {

@@ -17,8 +17,8 @@ package main
 import (
 	"fmt"
 
-	base_modules "github.com/brunoga/go-modules"
-	example_modules "github.com/brunoga/go-modules/examples/modules"
+	base_modules "gopkg.in/brunoga/go-modules.v1"
+	example_modules "gopkg.in/brunoga/go-modules.v1/examples/modules"
 )
 
 func main() {
