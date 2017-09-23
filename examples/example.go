@@ -11,7 +11,6 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
-
 package main
 
 import (
@@ -22,6 +21,11 @@ import (
 )
 
 func main() {
+	err := base_modules.LoadPluginModule("./modules/plugin/plugin.so")
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println("Number of sample modules :",
 		base_modules.GetModuleCountByType("sample-module"))
 	fmt.Println("Total number of modules  :",
@@ -31,6 +35,12 @@ func main() {
 	if simpleModule != nil {
 		fmt.Println(simpleModule.GenericId(), simpleModule.Name(),
 			simpleModule.Version())
+	}
+
+	simplePluginModule := base_modules.GetModuleById("simple-plugin-module", "")
+	if simplePluginModule != nil {
+		fmt.Println(simplePluginModule.GenericId(), simplePluginModule.Name(),
+			simplePluginModule.Version())
 	}
 
 	completeModule := base_modules.GetModuleById("complete-module", "").(*example_modules.CompleteModule)

@@ -22,6 +22,11 @@ package modules
 
 import (
 	"fmt"
+	"plugin"
+)
+
+const (
+	ApiVersion = 1
 )
 
 // ParameterMap defines a list of parameters used for configuring a module.
@@ -107,6 +112,29 @@ var registeredModulesById FullModuleMap
 func init() {
 	registeredModulesByType = make(map[string]FullModuleMap)
 	registeredModulesById = make(FullModuleMap)
+}
+
+func LoadPluginModule(path string) error {
+	p, err := plugin.Open(path)
+	if err != nil {
+		return err
+	}
+
+	s, err := p.Lookup("ModuleApiVersion")
+	if err != nil {
+		return err
+	}
+
+	moduleApiVersion, ok := s.(*int)
+	if !ok {
+		return fmt.Errorf("not a valid module plugin")
+	}
+
+	if *moduleApiVersion > ApiVersion {
+		return fmt.Errorf("module plugin requires API version %d or above")
+	}
+
+	return nil
 }
 
 // RegisterModule registers a new module for usage.
