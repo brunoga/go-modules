@@ -83,13 +83,14 @@ type Module interface {
 	// configuration options.
 	Configure(params *ParameterMap) error
 
-	// Duplicate creates and registers a new instance of this module with
+	// New creates and registers a new instance of this module with
 	// the given specific id. Returns a reference to the new Module and a
 	// nil error on success and a non-nil error on failure. Note that
-	// this must be implemented by each Module that cares about being
-	// duplicated and it is the responsibility of each implementation to
-	// register (calling RegisterModule()) the duplicate.
-	Duplicate(specificId string) (Module, error)
+	// this must be implemented by each Module that cares about multiple
+	// instances of it existing at the same time and it is the
+	// responsibility of each implementation to register (calling
+	// RegisterModule()) the new instance.
+	New(specificId string) (Module, error)
 
 	// Ready returns true if the module is ready to be used. False
 	// otherwise. If the module requires configuration, this will return

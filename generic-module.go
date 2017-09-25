@@ -18,6 +18,9 @@ import (
 	"fmt"
 )
 
+// MakeS sure GenericModule implements the Module interface.
+var _ Module = (*GenericModule)(nil)
+
 // GenericModule defines a generic module implementation. This is mainly to be
 // used for struct embedding as it is not very useful by itself.
 type GenericModule struct {
@@ -80,8 +83,8 @@ func (gm *GenericModule) Configure(parameters *ParameterMap) error {
 	return nil
 }
 
-func (gm *GenericModule) Duplicate(specificId string) (Module, error) {
-	return nil, fmt.Errorf("generic module can not be duplicated")
+func (gm *GenericModule) New(specificId string) (Module, error) {
+	return nil, fmt.Errorf("generic module can not have multiple instances")
 }
 
 func (gm *GenericModule) Ready() bool {
